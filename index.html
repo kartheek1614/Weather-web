@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 30px 40px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #0072ff;
+    }
+
+    input {
+      width: 80%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #0072ff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #005fcc;
+    }
+
+    #weatherResult {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+
+    .error {
+      color: red;
+    }
+
+    .success {
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Weather App</h1>
+    <input type="text" id="cityInput" placeholder="Enter a city (e.g., Hyderabad)" />
+    <button onclick="getWeather()">Get Weather</button>
+    <div id="weatherResult"></div>
+  </div>
+
+  <script>
+    async function getWeather() {
+      const city = document.getElementById("cityInput").value.trim();
+      const resultDiv = document.getElementById("weatherResult");
+      const apiKey = "4c1fb67de6d993a6df34e61328762755"; // Use your API key
+
+      if (!city) {
+        resultDiv.innerHTML = "<p class='error'>Please enter a city name.</p>";
+        return;
+      }
+
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log(data); // Debug output
+
+        if (response.ok && data.cod === 200) {
+          resultDiv.innerHTML = `
+            <p><strong>City:</strong> ${data.name}</p>
+            <p><strong>Temperature:</strong> ${data.main.temp}°C</p>
+            <p><strong>Weather:</strong> ${data.weather[0].main} - ${data.weather[0].description}</p>
+            <p><strong>Humidity:</strong> ${data.main.humidity}%</p>
+          `;
+        } else {
+          resultDiv.innerHTML = `<p class='error'>${data.message || "City not found."} Try again.</p>`;
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
+        resultDiv.innerHTML = `<p class='error'>Something went wrong. Check your internet or API key.</p>`;
+      }
+    }
+  </script>
+</body>
+</html>
